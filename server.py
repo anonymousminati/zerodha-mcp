@@ -13,7 +13,7 @@ import argparse
 # Load environment variables from .env file
 load_dotenv()
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 # Create an MCP server
 mcp = FastMCP("Zerodha MCP")
@@ -48,7 +48,10 @@ def get_login_url() -> str:
     Returns:
         str: The login URL for the user
     """
-    return kite.login_url()
+    logging.info("Entering get_login_url")
+    url = kite.login_url()
+    logging.info("Exiting get_login_url")
+    return url
 
 @mcp.tool()
 def get_access_token(request_token: str) -> str:
@@ -60,10 +63,11 @@ def get_access_token(request_token: str) -> str:
     Returns:
         str: The access token for the user
     """
+    logging.info("Entering get_access_token")
     data = kite.generate_session(request_token, api_secret=API_SECRET)
 
     kite.set_access_token(data['access_token'])
-
+    logging.info("Exiting get_access_token")
     return data['access_token']
 
 
@@ -84,10 +88,11 @@ def get_user_profile() -> str:
     Returns:
         str: A string representation of the user's complete profile information from Zerodha
     """
-
+    logging.info("Entering get_user_profile")
     # Get user profile
     profile = kite.profile()
     logging.info("Profile: %s", profile)
+    logging.info("Exiting get_user_profile")
     return str(profile)
 
 @mcp.tool()
@@ -112,9 +117,11 @@ def get_margins(segment: str) -> str:
     Returns:
         str: A string representation of the complete margins and funds information
     """
+    logging.info("Entering get_margins with segment: %s", segment)
     # Get margins for all segments
     margins = kite.margins(segment=segment)
     logging.info("Margins: %s", margins)
+    logging.info("Exiting get_margins")
     return str(margins)
 
 @mcp.tool()
@@ -136,8 +143,10 @@ def get_holdings() -> str:
     Returns:
         str: A string representation of the complete holdings information
     """
+    logging.info("Entering get_holdings")
     holdings = kite.holdings()
     logging.info("Holdings: %s", holdings)
+    logging.info("Exiting get_holdings")
     return str(holdings)
 
 @mcp.tool()
@@ -160,8 +169,10 @@ def get_positions() -> str:
     Returns:
         str: A string representation of the complete positions information
     """
+    logging.info("Entering get_positions")
     positions = kite.positions()
     logging.info("Positions: %s", positions)
+    logging.info("Exiting get_positions")
     return str(positions)
 
 @mcp.tool()
@@ -191,8 +202,10 @@ def get_orders() -> str:
     Returns:
         str: A string representation of all orders for the day
     """
+    logging.info("Entering get_orders")
     orders = kite.orders()
     logging.info("Orders: %s", orders)
+    logging.info("Exiting get_orders")
     return str(orders)
 
 @mcp.tool()
@@ -214,8 +227,10 @@ def get_order_history(order_id: str) -> str:
     Returns:
         str: A string representation of the complete order history
     """
+    logging.info("Entering get_order_history with order_id: %s", order_id)
     history = kite.order_history(order_id)
     logging.info("Order history: %s", history)
+    logging.info("Exiting get_order_history")
     return str(history)
 
 @mcp.tool()
@@ -230,8 +245,10 @@ def get_order_trades(order_id: str) -> str:
     Returns:
         str: A string representation of all trades for the given order
     """
+    logging.info("Entering get_order_trades with order_id: %s", order_id)
     trades = kite.order_trades(order_id)
     logging.info("Order trades: %s", trades)
+    logging.info("Exiting get_order_trades")
     return str(trades)
 
 @mcp.tool()
@@ -253,6 +270,7 @@ def place_order(exchange: str, tradingsymbol: str, transaction_type: str,
     Returns:
         str: Order ID of the placed order
     """
+    logging.info(f"Entering place_order: exchange={exchange}, symbol={tradingsymbol}, type={transaction_type}, qty={quantity}, price={price}, product={product}, order_type={order_type}")
     try:
         order_id = kite.place_order(
             exchange=exchange,
@@ -288,8 +306,9 @@ def modify_order(order_id: str, quantity: Optional[int] = None,
     Returns:
         str: Order ID of the modified order
     """
+    logging.info(f"Entering modify_order: order_id={order_id}, quantity={quantity}, price={price}, order_type={order_type}")
     try:
-        order_id = kite.modify_order(
+        order_id_resp = kite.modify_order(
             order_id=order_id,
             quantity=quantity,
             price=price,
@@ -297,8 +316,8 @@ def modify_order(order_id: str, quantity: Optional[int] = None,
             trigger_price=trigger_price,
             validity=validity
         )
-        logging.info("Order modified. ID: %s", order_id)
-        return f"Order modified successfully. Order ID: {order_id}"
+        logging.info("Order modified. ID: %s", order_id_resp)
+        return f"Order modified successfully. Order ID: {order_id_resp}"
     except Exception as e:
         logging.error("Order modification failed: %s", str(e))
         return f"Order modification failed: {str(e)}"
@@ -313,10 +332,11 @@ def cancel_order(order_id: str) -> str:
     Returns:
         str: Order ID of the cancelled order
     """
+    logging.info(f"Entering cancel_order: order_id={order_id}")
     try:
-        order_id = kite.cancel_order(order_id=order_id)
-        logging.info("Order cancelled. ID: %s", order_id)
-        return f"Order cancelled successfully. Order ID: {order_id}"
+        order_id_resp = kite.cancel_order(order_id=order_id)
+        logging.info("Order cancelled. ID: %s", order_id_resp)
+        return f"Order cancelled successfully. Order ID: {order_id_resp}"
     except Exception as e:
         logging.error("Order cancellation failed: %s", str(e))
         return f"Order cancellation failed: {str(e)}"
