@@ -10,6 +10,11 @@ A Python-based trading assistant that connects to a Zerodha MCP server to help u
 - **Zerodha API Integration**: Uses Zerodha's API to interact with the trading platform
 - **Agno Agent**: Uses Agno Agent to interact with the trading platform
 
+## Tech Stack
+
+- **Protocol**: [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)
+- **Agent Framework**: [Agno](https://github.com/agno-agi/agno)
+
 ## Tools
 
 - **Place Orders**: Place orders in the trading platform
