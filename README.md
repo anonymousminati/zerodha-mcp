@@ -1,20 +1,34 @@
-# Zerodha MCP Server Client
+# Zerodha MCP Server & Client
 
-A Python-based trading assistant that connects to a Zerodha MCP server to help users manage their trading accounts securely.
+A Python-based trading assistant that connects to a Zerodha MCP server to help users manage their trading account.
 
 ## Features
 
-- **Secure Account Management**: Safely manage trading accounts, orders, and positions
-- **Real-time Updates**: Get instant updates on order status and portfolio changes
+- **Account Management**: Manage Zerodha trading account, orders, and positions
 - **Interactive Chat Interface**: Natural language interface for trading operations
 - **MCP Integration**: Built on the Model Context Protocol for standardized communication
-- **Session Management**: Maintains secure connections and handles reconnections
+- **Zerodha API Integration**: Uses Zerodha's API to interact with the trading platform
+- **Agno Agent**: Uses Agno Agent to interact with the trading platform
+
+## Tools
+
+- **Place Orders**: Place orders in the trading platform
+- **Modify Orders**: Modify orders in the trading platform
+- **Cancel Orders**: Cancel orders in the trading platform
+- **Get Orders**: Get orders in the trading platform
+- **Get Order History**: Get order history in the trading platform
+- **Get Order Trades**: Get order trades in the trading platform
+- **Get Margins**: Get margins in the trading platform
+- **Get Holdings**: Get holdings in the trading platform
+- **Get Positions**: Get positions in the trading platform
+- **Get User Profile**: Get user profile in the trading platform
 
 ## Prerequisites
 
-- Python 3.8+
-- Zerodha trading account with API access
+- Python
+- Zerodha trading account with Personal API access from [here](https://developers.kite.trade/login)
 - Zerodha API key and secret
+- OpenAI API key (for Agno Agent)
 
 ## Installation
 
@@ -50,6 +64,7 @@ SERVER_MODE=sse  # or stdio
 # Client Configuration
 MCP_HOST=localhost
 MCP_PORT=8001
+OPENAI_API_KEY=your_openai_api_key
 ```
 
 ## Server Usage
