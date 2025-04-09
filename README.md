@@ -57,7 +57,16 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Create a `.env` file with your configuration:
+4. Set up environment variables:
+
+```bash
+# Copy the example environment file
+cp .env.example .env
+
+# Edit the .env file with your credentials
+```
+
+5. Create a `.env` file with your configuration:
 
 ```env
 # Server Configuration
