@@ -253,7 +253,7 @@ def get_order_trades(order_id: str) -> str:
 
 @mcp.tool()
 def place_order(exchange: str, tradingsymbol: str, transaction_type: str,
-                quantity: int, price: Optional[float] = None, product: str = "CNC",
+                quantity: int, price: float, product: str = "CNC",
                 order_type: str = "MARKET", validity: str = "DAY", variety: str = "regular") -> str:
     """Place a new order on Zerodha.
 
@@ -290,9 +290,8 @@ def place_order(exchange: str, tradingsymbol: str, transaction_type: str,
         return f"Order placement failed: {str(e)}"
 
 @mcp.tool()
-def modify_order(order_id: str, quantity: Optional[int] = None,
-                price: Optional[float] = None, order_type: Optional[str] = None,
-                trigger_price: Optional[float] = None, validity: Optional[str] = None) -> str:
+def modify_order(order_id: str, quantity: int,price: float, order_type: str,
+                trigger_price: float, validity: str) -> str:
     """Modify an existing order.
 
     Args:
