@@ -9,11 +9,14 @@ A Python-based trading assistant that connects to a Zerodha MCP server to help u
 - **MCP Integration**: Built on the Model Context Protocol for standardized communication
 - **Zerodha API Integration**: Uses Zerodha's API to interact with the trading platform
 - **Agno Agent**: Uses Agno Agent to interact with the trading platform
+- **Google ADK Agent**: Uses Google ADK Agent to interact with the trading platform
 
 ## Tech Stack
 
 - **Protocol**: [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)
-- **Agent Framework**: [Agno](https://github.com/agno-agi/agno)
+- **Agent Framework**:
+  - [Agno](https://github.com/agno-agi/agno)
+  - [Google ADK](https://developers.google.com/adk)
 
 ## Tools
 
@@ -34,6 +37,7 @@ A Python-based trading assistant that connects to a Zerodha MCP server to help u
 - Zerodha trading account with Personal API access from [here](https://developers.kite.trade/login)
 - Zerodha API key and secret
 - OpenAI API key (for Agno Agent)
+- Gemini API key or Application Default Credentials (for Google ADK Agent)
 
 ## Installation
 
@@ -79,6 +83,7 @@ SERVER_MODE=sse  # or stdio
 MCP_HOST=localhost
 MCP_PORT=8001
 OPENAI_API_KEY=your_openai_api_key
+# GOOGLE_API_KEY=your_google_api_key
 ```
 
 ## Server Usage
@@ -114,33 +119,53 @@ The server provides the following tools:
 
 ## Client Usage
 
-The client connects to the MCP server and provides an interactive interface for trading operations.
+This project provides two client implementations: one using the Agno framework (`client/agno_client.py`) and another using Google ADK (`client/google_adk_client.py`). Both connect to the MCP server and provide an interactive interface for trading operations.
 
-1. Start the client using one of the following methods:
+### Running the Agno Client
+
+1. Ensure your `.env` file includes `OPENAI_API_KEY`.
+2. Start the client using one of the following methods:
 
 ```bash
 # Using environment variables from .env file
-python client.py
+python client/agno_client.py
 
 # Using command line arguments
-python client.py --host localhost --port 8001
+python client/agno_client.py --host localhost --port 8001
 
 # Using a combination (command line arguments take precedence)
-MCP_HOST=localhost MCP_PORT=8001 python client.py --host otherhost --port 9000
+MCP_HOST=localhost MCP_PORT=8001 python client/agno_client.py --host otherhost --port 9000
 ```
 
-The client supports configuration through multiple sources, with the following precedence:
+### Running the Google ADK Client
+
+1. Ensure you have authenticated with Google AI, either by setting the `GOOGLE_API_KEY` environment variable (and uncommenting it in `.env`) or by using Application Default Credentials (run `gcloud auth application-default login`).
+2. Start the client using one of the following methods:
+
+```bash
+# Using environment variables from .env file
+python client/google_adk_client.py
+
+# Using command line arguments
+python client/google_adk_client.py --host localhost --port 8001
+
+# Using a combination (command line arguments take precedence)
+MCP_HOST=localhost MCP_PORT=8001 python client/google_adk_client.py --host otherhost --port 9000
+```
+
+### Client Configuration
+
+Both clients support configuration through multiple sources, with the following precedence:
 
 1. Command-line arguments (highest precedence)
 2. Environment variables
-3. `.env` file
-4. Default values (lowest precedence)
+3. `.env` file variables
 
 Configuration options:
 
 - Environment variables: `MCP_HOST` and `MCP_PORT`
 - Command-line arguments: `--host` and `--port`
-- `.env` file variables: `MCP_HOST` and `MCP_PORT`
+- `.env` file variables: `MCP_HOST`, `MCP_PORT`, `OPENAI_API_KEY`, and `GOOGLE_API_KEY`
 
 Default values (if no configuration is provided):
 
@@ -153,24 +178,27 @@ The client automatically loads environment variables from the `.env` file in the
 # Client Configuration
 MCP_HOST=localhost
 MCP_PORT=8001
+OPENAI_API_KEY=your_openai_api_key
+# GOOGLE_API_KEY=your_google_api_key
 ```
 
-2. The client will automatically connect to the MCP server using the provided configuration.
+3. The client will automatically connect to the MCP server using the provided configuration.
 
-3. Once connected, you can interact with the assistant using natural language commands. For example:
+4. Once connected, you can interact with the assistant using natural language commands. For example:
 
    - "Show me my portfolio holdings"
    - "What are my current positions?"
    - "Place a market order for 10 shares of RELIANCE"
    - "Cancel order ID 123456"
 
-4. To exit the client, type 'quit' when prompted.
+5. To exit the client, type 'quit' when prompted.
 
 ## Development
 
 ### Project Structure
 
-- `client.py`: MCP client implementation with interactive chat interface
+- `client/agno_client.py`: MCP client implementation using Agno
+- `client/google_adk_client.py`: MCP client implementation using Google ADK
 - `server.py`: MCP server implementation with Zerodha API integration
 - `generate_token.py`: Utility for generating access tokens
 - `requirements.txt`: Project dependencies
@@ -191,5 +219,6 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ## Acknowledgments
 
 - Built using [Agno](https://github.com/agno-agi/agno)
+- Built using [Google ADK](https://google.github.io/adk-docs/)
 - Uses [MCP](https://modelcontextprotocol.io/) for standardized communication
 - Powered by [KiteConnect](https://kite.trade/) for Zerodha API integration
