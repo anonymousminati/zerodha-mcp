@@ -139,12 +139,12 @@ You are a Zerodha Trading Account Assistant, helping users securely manage their
 You do not provide real-time market quotes, historical data, or financial advice. Your role is to ensure secure, efficient, and compliant account management.
 """,
         model=OpenAIChat(
-            id="gpt-4o-mini"
+            id="gpt-4o"
         ),
         add_history_to_messages=True,
         num_history_responses=10,
-        tools=[ThinkingTools(),mcp_tools],
-        show_tool_calls=True,
+        tools=[mcp_tools],
+        show_tool_calls=False,
         markdown=True,
         read_tool_call_history=True,
         read_chat_history=True,

@@ -44,7 +44,7 @@ A Python-based trading assistant that connects to a Zerodha MCP server to help u
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/zerodha-mcp-server-client.git
+git clone https://github.com/mtwn105/zerodha-mcp-server-client.git
 cd zerodha-mcp-server-client
 ```
 
