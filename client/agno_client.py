@@ -1,39 +1,46 @@
 #!/usr/bin/env python
 # client.py
 import os
-import agno
+import sys
 import asyncio
 import logging
 import argparse
 from agno.models.openai import OpenAIChat
-from agno.agent import Agent, RunResponse
+from agno.agent import Agent
 from agno.tools.mcp import MCPTools
-from agno.tools.thinking import ThinkingTools
 from mcp import ClientSession
-from mcp.client.stdio import stdio_client
 from rich.console import Console
-from rich.logging import RichHandler
 from rich.prompt import Prompt
-from rich import print as rprint
 from rich.theme import Theme
-from rich.text import Text
 from typing import Optional
 from contextlib import AsyncExitStack
 from mcp import ClientSession
 from mcp.client.sse import sse_client
 from dotenv import load_dotenv
 
-# Suppress httpx logging
-logging.getLogger("httpx").setLevel(logging.WARNING)
+# Silence all logging
+class SilentFilter(logging.Filter):
+    def filter(self, record):
+        return False
 
-# Configure rich logging
-logging.basicConfig(
-    level=logging.ERROR,
-    format="%(message)s",
-    datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks=True, markup=True)]
-)
-logger = logging.getLogger(__name__)
+# Configure root logger to be silent
+root_logger = logging.getLogger()
+root_logger.addFilter(SilentFilter())
+root_logger.setLevel(logging.CRITICAL)
+
+# Silence specific loggers
+for logger_name in ['agno', 'httpx', 'urllib3', 'asyncio']:
+    logger = logging.getLogger(logger_name)
+    logger.addFilter(SilentFilter())
+    logger.setLevel(logging.CRITICAL)
+    logger.propagate = False
+
+# Redirect stdout/stderr for the agno library
+class DevNull:
+    def write(self, msg): pass
+    def flush(self): pass
+
+sys.stderr = DevNull()
 
 # Define custom theme
 custom_theme = Theme({
@@ -71,9 +78,7 @@ class MCPClient:
         await self.session.initialize()
 
         # List available tools to verify connection
-        # console.print("[success]✓[/success] [info]Initialized SSE client...[/info]")
         response = await self.session.list_tools()
-        logger.debug(f"[info]Connected to server with {len(response.tools)} tools available[/info]")
 
     async def cleanup(self):
         """Properly clean up the session and streams"""
@@ -99,20 +104,12 @@ async def main():
     mcp_url = f"http://{mcp_host}:{mcp_port}/sse"
 
     mcp_client = MCPClient()
-
     await mcp_client.connect_to_sse_server(mcp_url)
-
-    logger.debug(f"[info]Connected to MCP server at {mcp_url}[/info]")
 
     # List available tools
     response = await mcp_client.session.list_tools()
-    logger.debug(f"[info]Available tools: {', '.join([tool.name for tool in response.tools])}[/info]")
-
     mcp_tools = MCPTools(session=mcp_client.session)
-
     await mcp_tools.initialize()
-
-    logger.debug(f"[info]MCP tools initialized[/info]")
 
     # Create the Agno agent with Gemini model
     agent = Agent(
@@ -148,15 +145,14 @@ You do not provide real-time market quotes, historical data, or financial advice
         markdown=True,
         read_tool_call_history=True,
         read_chat_history=True,
-        tool_call_limit=10
+        tool_call_limit=10,
+        telemetry=False,
+        add_datetime_to_instructions=True
     )
 
     # Welcome message
-
     console.print()
-
     console.print("[info]Welcome to Zerodha! I'm here to assist you with managing your trading account, orders, portfolio, and positions. How can I help you today?[/info]", style="response")
-
 
     try:
         while True:
@@ -165,14 +161,11 @@ You do not provide real-time market quotes, historical data, or financial advice
             # Get user input with rich prompt
             user_query = Prompt.ask("[query]Enter your query:[/query] [dim](or 'quit' to exit)[/dim]")
 
-
-
             # Check if user wants to quit
             if user_query.lower() == 'quit':
                 break
 
-
-                # Add spacing before the prompt
+            # Add spacing before the prompt
             console.print()
             # Display user query
             console.print(f"[user]You:[/user] {user_query}")
@@ -183,19 +176,6 @@ You do not provide real-time market quotes, historical data, or financial advice
             # Run the agent and stream the response
             result = await agent.arun(user_query, stream=True)
             async for response in result:
-                # Check for tool calls
-                # Note: The exact structure of 'response' and 'tool_calls' depends on the 'agno' library.
-                # This assumes 'response' has a 'tool_calls' attribute which is a list of dicts.
-                if hasattr(response, 'tool_calls') and response.tool_calls:
-                    console.print() # Add spacing before tool call info
-                    console.print("[bold yellow]🛠️  Executing Tools:[/bold yellow]")
-                    for tool_call in response.tool_calls:
-                        tool_name = tool_call.get('name', 'N/A')
-                        tool_args = tool_call.get('arguments', '{}') # Default to string '{}'
-                        console.print(f"  - [cyan]{tool_name}[/cyan] with args: [dim]{tool_args}[/dim]")
-                    console.print() # Add spacing after tool call info
-
-                # Check for regular content
                 if response.content:
                     console.print(response.content, style="response", end="")
 
@@ -203,11 +183,10 @@ You do not provide real-time market quotes, historical data, or financial advice
             console.print()  # Add extra spacing after the response
 
     except Exception as e:
-        logger.error(f"[danger]Error running agent: {e}[/danger]")
+        console.print(f"[danger]An error occurred: {str(e)}[/danger]")
     finally:
         # Disconnect from the MCP server
         await mcp_client.disconnect()
-        logger.debug("[info]Disconnected from MCP server[/info]")
 
 if __name__ == "__main__":
     asyncio.run(main())

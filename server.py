@@ -322,10 +322,11 @@ def modify_order(order_id: str, quantity: int,price: float, order_type: str,
         return f"Order modification failed: {str(e)}"
 
 @mcp.tool()
-def cancel_order(order_id: str) -> str:
+def cancel_order(order_id: str, variety: str = "regular") -> str:
     """Cancel an order.
 
     Args:
+        variety (str): Variety of the order to be cancelled (regular, amo, bo, co, etc). Default is regular.
         order_id (str): ID of the order to be cancelled
 
     Returns:
@@ -333,7 +334,7 @@ def cancel_order(order_id: str) -> str:
     """
     logging.info(f"Entering cancel_order: order_id={order_id}")
     try:
-        order_id_resp = kite.cancel_order(order_id=order_id)
+        order_id_resp = kite.cancel_order(variety=variety, order_id=order_id)
         logging.info("Order cancelled. ID: %s", order_id_resp)
         return f"Order cancelled successfully. Order ID: {order_id_resp}"
     except Exception as e:
