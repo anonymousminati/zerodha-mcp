@@ -119,7 +119,13 @@ The server provides the following tools:
 
 ## Client Usage
 
-This project provides two client implementations: one using the Agno framework (`client/agno_client.py`) and another using Google ADK (`client/google_adk_client.py`). Both connect to the MCP server and provide an interactive interface for trading operations.
+This project provides three client implementations:
+
+1. Using the Agno framework (`client/agno_client.py`)
+2. Using Agno with Gradio web interface (`client/agno_gradio_client.py`)
+3. Using Google ADK (`client/google_adk_client.py`)
+
+All clients connect to the MCP server and provide an interactive interface for trading operations.
 
 ### Running the Agno Client
 
@@ -152,6 +158,33 @@ python client/google_adk_client.py --host localhost --port 8001
 # Using a combination (command line arguments take precedence)
 MCP_HOST=localhost MCP_PORT=8001 python client/google_adk_client.py --host otherhost --port 9000
 ```
+
+### Running the Gradio Web Interface
+
+1. Ensure your `.env` file includes `OPENAI_API_KEY`.
+2. Start the Gradio web interface:
+
+```bash
+# Using environment variables from .env file
+python client/agno_gradio_client.py
+
+# Using command line arguments for server configuration
+python client/agno_gradio_client.py --host localhost --port 8001
+```
+
+3. Open your web browser and navigate to the URL shown in the terminal (typically `http://localhost:7860`).
+
+4. Use the web interface to:
+   - Connect to the MCP server by entering the host and port
+   - Chat with the AI assistant using natural language
+   - Manage your Zerodha account through a user-friendly interface
+
+The Gradio interface provides:
+
+- Easy connection management with host/port configuration
+- Real-time chat interface with the AI assistant
+- Visual feedback for connection status
+- Mobile-friendly responsive design
 
 ### Client Configuration
 
@@ -199,6 +232,7 @@ OPENAI_API_KEY=your_openai_api_key
 
 - `client/agno_client.py`: MCP client implementation using Agno
 - `client/google_adk_client.py`: MCP client implementation using Google ADK
+- `client/agno_gradio_client.py`: Web interface using Gradio and Agno
 - `server.py`: MCP server implementation with Zerodha API integration
 - `generate_token.py`: Utility for generating access tokens
 - `requirements.txt`: Project dependencies
