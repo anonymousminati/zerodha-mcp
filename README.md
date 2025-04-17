@@ -17,6 +17,8 @@ A Python-based trading assistant that connects to a Zerodha MCP server to help u
 - **Agent Framework**:
   - [Agno](https://github.com/agno-agi/agno)
   - [Google ADK](https://developers.google.com/adk)
+ 
+![diagram-export-4-17-2025-4_00_54-PM](https://github.com/user-attachments/assets/e2dc5414-d95e-4297-8eb1-fdbd4fbe4a9b)
 
 ## Tools
 
