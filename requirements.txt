@@ -1,5 +1,3 @@
-agno
-mcp
 python-dotenv
 kiteconnect
 starlette
@@ -8,3 +6,5 @@ fastapi
 rich
 google-adk
 requests
+pydantic
+Flask
